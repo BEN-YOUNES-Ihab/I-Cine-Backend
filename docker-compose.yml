@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:13
+    ports:
+      - 5434:5432
+      # 5434 port machine 
+      # 5432 port docker pg 
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123
+      POSTGRES_DB: nest
+    networks:
+      - basenetwork
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: root@root.com
+      PGADMIN_DEFAULT_PASSWORD: root
+      # ATTENTION : host.docker.internal
+    ports:
+      - 5001:80
+    networks:
+      - basenetwork
+networks:
+  basenetwork:

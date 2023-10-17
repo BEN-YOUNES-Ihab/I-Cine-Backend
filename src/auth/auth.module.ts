@@ -5,14 +5,14 @@ import { LocalStrategy } from './strategys/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports:[
+  imports: [
     JwtModule.register({
       secret: jwtConstants.secret,
-      signOptions: {expiresIn:'1d'},
-      global:true
-    })
+      signOptions: { expiresIn: '1d' },
+      global: true,
+    }),
   ],
   providers: [AuthService, LocalStrategy],
-  controllers: [AuthController]
+  controllers: [AuthController],
 })
 export class AuthModule {}
