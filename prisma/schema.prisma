@@ -11,13 +11,65 @@ datasource db {
 }
 
 model User{
-  id Int@default(autoincrement())
+  id Int @id @unique @default(autoincrement())
 
   firstName String?
   lastName String?
   email String @unique
   hashed_password String
   role String @default("user")
+
+  orders Order[]
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Movie{
+  id Int @id @default(autoincrement())
+
+  title  String 
+  description String?
+  releaseDate DateTime
+  onDisplay Boolean?
+  category String
+
+  sessions Session[]
+
+  imageUrl String?
+  imageCloudinaryPublicId String?
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Session{
+  id Int @id @default(autoincrement())
+
+  movieId Int?
+  movie Movie? @relation(fields: [movieId], references: [id])
+
+  date DateTime
+  places Int
+  
+  orders Order[]
+
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
+model Order{
+  id Int @id @default(autoincrement())
+
+  places Int
+  amount Int 
+
+  sessionId Int
+  session Session @relation(fields: [sessionId], references: [id])
+
+  userId Int
+  user User @relation(fields: [userId], references:[id])
+
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 }
