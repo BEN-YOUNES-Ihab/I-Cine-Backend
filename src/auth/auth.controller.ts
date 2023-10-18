@@ -6,29 +6,24 @@ import { JwtGuard } from './guards/jwt.guard';
 
 @Controller('auth')
 export class AuthController {
+  constructor(private authService: AuthService) {}
 
-    constructor(
-        private authService:AuthService
-    ){}
+  @Post('/signUp')
+  signUp(@Body() body: SignUpDto) {
+    return this.authService.signUp(body);
+  }
 
-    @Post('/signUp')
-    signUp(@Body() body:SignUpDto ){
-        return this.authService.signUp(body);
-    }
+  @Post('/login')
+  @UseGuards(LocalGuard)
+  logIn(@Req() req) {
+    return this.authService.logIn(req.user);
+  }
 
-    @Post('/login')
-    @UseGuards(LocalGuard)
-    logIn(@Req() req){
-        return this.authService.logIn(req.user);
-    }
-
-    @Get('is_connected')
-    @UseGuards(JwtGuard)
-    isConnected(){
-        return {
-            status:'CONNECTED'
-        };
-    }
-
-
+  @Get('is_connected')
+  @UseGuards(JwtGuard)
+  isConnected() {
+    return {
+      status: 'CONNECTED',
+    };
+  }
 }
