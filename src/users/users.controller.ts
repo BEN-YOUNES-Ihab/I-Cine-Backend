@@ -33,12 +33,12 @@ export class UsersController {
     //   return this.userService.getUsersList(className, page, size);
     // }
     @Get("/getUsersList")
-    async getUsersList(@Query() userFilterDto: UserFilterDto) {
+    getUsersList(@Query() userFilterDto: UserFilterDto) {
       return this.userService.getFilteredUsers(userFilterDto);
     }
 
     @Delete(':email/deleteUser')
-    async deleteUser(@Param('email') email:string){
+    deleteUser(@Param('email') email:string){
         return this.userService.deleteUser(email);
     }
 }

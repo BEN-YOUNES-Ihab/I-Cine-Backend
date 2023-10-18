@@ -17,7 +17,7 @@ model User{
   lastName String?
   email String @unique
   hashed_password String
-  role String @default("user")
+  role String @default("Utilisateur")
 
   orders Order[]
 

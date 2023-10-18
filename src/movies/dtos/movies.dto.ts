@@ -1,4 +1,4 @@
-import { IsString, MinLength, IsNotEmpty, ValidateIf, IsInt, IsDate, IsBoolean } from "class-validator";
+import { IsString, MinLength, IsNotEmpty, ValidateIf, IsInt, IsDate, IsBoolean, IsOptional } from "class-validator";
 
 export class movieDto {
     @IsString()
@@ -9,10 +9,10 @@ export class movieDto {
     @ValidateIf((object,value)=>value!==null)
     description
     
-    @IsString()
     @IsNotEmpty()
     releaseDate 
 
+    @IsBoolean()
     onDisplay
 
     @IsString()
@@ -20,4 +20,15 @@ export class movieDto {
     category
 
 }
+export class FilterDto {
 
+    @IsOptional()
+    @IsString()
+    keyword?: string;
+  
+    @IsOptional()
+    page?: string;
+  
+    @IsOptional()
+    size?: string;
+  }

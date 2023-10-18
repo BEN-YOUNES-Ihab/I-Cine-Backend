@@ -1,6 +1,6 @@
-import { Body, Controller,Get ,Param,ParseIntPipe,Patch,Post, Delete, UploadedFile, UseInterceptors, } from '@nestjs/common';
+import { Body, Controller,Get ,Param,ParseIntPipe,Patch,Post, Delete, UploadedFile, UseInterceptors, Query, } from '@nestjs/common';
 import { MoviesService } from './movies.service';
-import { movieDto } from './dtos/movies.dto';
+import { FilterDto, movieDto } from './dtos/movies.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { updateMovieFormDto } from './dtos/update_movie.dto';
 
@@ -14,16 +14,6 @@ export class MoviesController {
         return this.movieService.createMovie(dto);
     }
 
-    @Get('/:id/getMovie')
-    getMovie(@Param('id', ParseIntPipe) id: number){
-        return this.movieService.getMovie(id);
-    }
-
-    @Get('/getMoviesList')
-    getMovies(){
-        return this.movieService.getMovies();
-    }
-
     @Patch('/:id/updateMovie')
     updateMovie(@Param('id',ParseIntPipe) id:number, @Body() dto: updateMovieFormDto){
         return this.movieService.updateMovie(id, dto);
@@ -34,6 +24,10 @@ export class MoviesController {
         return this.movieService.deleteMovie(id);
     }
 
+    @Get("/getMoviesList")
+    getMoviesList(@Query() movieFilterDto: FilterDto) {
+      return this.movieService.getMovies(movieFilterDto);
+    }
 
     @Post('/:id/upload-image')
     @UseInterceptors(FileInterceptor('file'))

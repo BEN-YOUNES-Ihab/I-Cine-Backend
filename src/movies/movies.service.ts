@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { movieDto } from './dtos/movies.dto';
+import { FilterDto, movieDto } from './dtos/movies.dto';
 import { updateMovieFormDto } from './dtos/update_movie.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
@@ -40,9 +40,34 @@ export class MoviesService {
         }
     }    
 
-    async getMovies(){
-        const movies = await this.prismaService.movie.findMany()
-        return movies;
+    async getMovies(movieFilterDto : FilterDto){
+        const { keyword, page = '1', size = '10' } = movieFilterDto;
+    
+        const skip = (parseInt(page) - 1) * parseInt(size);
+    
+        const where = {};
+
+        if (keyword) {
+          where['OR'] = [
+            { title: { contains: keyword } },
+            { category: { contains: keyword } }
+          ];
+        }
+    
+        const movies = await this.prismaService.movie.findMany({
+          where,
+          skip,
+          take: parseInt(size),
+        });
+        const totalElements = await this.prismaService.movie.count({ where }); // Count all matching records.
+
+        const totalPages = Math.ceil(totalElements / parseInt(size));
+
+        return{
+            content: movies,
+            totalElements: totalElements,
+            totalPages:totalPages
+        };
     }
 
     async updateMovie(id:number, dto: updateMovieFormDto){
@@ -51,7 +76,13 @@ export class MoviesService {
                 where:{
                     id:id
                 },
-                data: { ...dto},
+                data: { 
+                    title:dto.title,
+                    description:dto.description,
+                    releaseDate:new Date(dto.releaseDate[0]),
+                    onDisplay:dto.onDisplay,
+                    category:dto.category
+                },
             })
             return movie
         }catch(e){
@@ -83,6 +114,7 @@ export class MoviesService {
     }
 
     async uploadMovieImage(movieId : number,file: Express.Multer.File){
+        console.log('hihoo')
         if(!file){
             throw new NotFoundException('No file');
         }
@@ -94,13 +126,14 @@ export class MoviesService {
             console.log(e);
         }
         const uploadedFile = await this.cloudinaryService.uploadFile(file);
-            const movie = await this.prismaService.movie.update({
-                where:{id: movieId},
-                data: {
-                    imageUrl:uploadedFile.url,
-                    imageCloudinaryPublicId: uploadedFile.public_id
-                }
-            })
-            return movie;
+        console.log(uploadedFile);
+        const movie = await this.prismaService.movie.update({
+            where:{id: movieId},
+            data: {
+                imageUrl:uploadedFile.url,
+                imageCloudinaryPublicId: uploadedFile.public_id
+            }
+        })
+        return movie;
     }
 }
