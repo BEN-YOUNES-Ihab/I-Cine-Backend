@@ -1,7 +1,7 @@
 import { IsString, MinLength, IsNotEmpty, ValidateIf, IsInt, IsDate, IsBoolean, IsOptional } from "class-validator";
 
 export class sessionDto {
-    @IsString()
+    
     @IsNotEmpty()
     date
 
@@ -21,7 +21,11 @@ export class FilterDto {
 
     @IsOptional()
     @IsString()
-    keyword?: string;
+    minDate?: string;
+
+    @IsOptional()
+    @IsString()
+    maxDate?: string;
   
     @IsOptional()
     page?: string;

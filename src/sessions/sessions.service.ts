@@ -9,9 +9,15 @@ export class SessionsService {
     constructor(private prismaService : PrismaService){}
 
     async createSession(dto: sessionDto){
+        let date;
+        if(typeof dto.date === "string"){
+            date= dto.date;
+        }else{
+            date= dto.date[0]
+        }
         const sesssion = await this.prismaService.session.create({
             data:{ 
-                date:new Date(dto.date),
+                date:new Date(date),
                 places:dto.places,
                 movieId:dto.movieId
             }
@@ -20,19 +26,22 @@ export class SessionsService {
     }
 
     async getSessionsByMovieId(sessionFilterDto : FilterDto){
-        const { movieId, keyword, page = '1', size = '10' } = sessionFilterDto;
-    
-        const skip = (parseInt(page) - 1) * parseInt(size);
-        console.log(movieId)
-        const where = {};
+        const { movieId, minDate, maxDate, page = '1', size = '10' } = sessionFilterDto;
 
+        const skip = (parseInt(page) - 1) * parseInt(size);
+        const where = {};
         where['movieId'] = +movieId;
 
-        if (keyword) {
-          where['OR'] = [
-            { title: { contains: keyword } },
-            { category: { contains: keyword } }
-          ];
+        if (minDate) {
+            let newMinDate = new Date(minDate);
+            let newMaxDate = new Date(maxDate);
+
+            let filterMinDate = new Date(newMinDate.setHours(0,0,0,0));
+            let filterMaxDate = new Date(newMaxDate.setHours(23,59,59,10));
+
+            where['OR'] = [
+                { date: { gte: filterMinDate, lte: filterMaxDate } }
+            ];
         }
     
         const sessions = await this.prismaService.session.findMany({
@@ -52,12 +61,18 @@ export class SessionsService {
     }
 
     async updateSession(id:number, dto: updateSessionFormDto){
+        let date;
+        if(typeof dto.date === "string"){
+            date= dto.date;
+        }else{
+            date= dto.date[0]
+        }
         const session = await this.prismaService.session.update({
             where:{
                 id:id
             },
             data: {
-                date:new Date(dto.date),
+                date:new Date(date),
                 places:dto.places,
                 movieId:dto.movieId,
                 updatedAt: new Date()

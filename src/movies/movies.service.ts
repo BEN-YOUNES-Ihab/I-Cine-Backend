@@ -13,11 +13,17 @@ export class MoviesService {
     ){}
 
     async createMovie(dto: movieDto){
+        let date;
+        if(typeof dto.releaseDate === "string"){
+            date= dto.releaseDate;
+        }else{
+            date= dto.releaseDate[0]
+        }
         const movie = await this.prismaService.movie.create({
             data:{ 
                 title:dto.title,
                 description:dto.description,
-                releaseDate:new Date(dto.releaseDate),
+                releaseDate:new Date(date),
                 onDisplay:dto.onDisplay,
                 category:dto.category
             }
@@ -71,6 +77,12 @@ export class MoviesService {
     }
 
     async updateMovie(id:number, dto: updateMovieFormDto){
+        let date;
+        if(typeof dto.releaseDate === "string"){
+            date= dto.releaseDate;
+        }else{
+            date= dto.releaseDate[0]
+        }
         try{
             const movie = await this.prismaService.movie.update({
                 where:{
@@ -79,7 +91,7 @@ export class MoviesService {
                 data: { 
                     title:dto.title,
                     description:dto.description,
-                    releaseDate:new Date(dto.releaseDate[0]),
+                    releaseDate:new Date(date),
                     onDisplay:dto.onDisplay,
                     category:dto.category,
                     updatedAt: new Date()
