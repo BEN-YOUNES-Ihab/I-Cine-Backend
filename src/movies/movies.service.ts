@@ -81,7 +81,8 @@ export class MoviesService {
                     description:dto.description,
                     releaseDate:new Date(dto.releaseDate[0]),
                     onDisplay:dto.onDisplay,
-                    category:dto.category
+                    category:dto.category,
+                    updatedAt: new Date()
                 },
             })
             return movie

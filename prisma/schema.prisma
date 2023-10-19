@@ -13,8 +13,8 @@ datasource db {
 model User{
   id Int @id @unique @default(autoincrement())
 
-  firstName String?
-  lastName String?
+  firstName String
+  lastName String
   email String @unique
   hashed_password String
   role String @default("Utilisateur")
@@ -31,7 +31,7 @@ model Movie{
   title  String 
   description String?
   releaseDate DateTime
-  onDisplay Boolean?
+  onDisplay Boolean
   category String
 
   sessions Session[]
@@ -46,8 +46,8 @@ model Movie{
 model Session{
   id Int @id @default(autoincrement())
 
-  movieId Int?
-  movie Movie? @relation(fields: [movieId], references: [id])
+  movieId Int
+  movie Movie @relation(fields: [movieId], references: [id])
 
   date DateTime
   places Int
