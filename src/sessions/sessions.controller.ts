@@ -22,6 +22,11 @@ export class SessionsController {
       return this.sessionsService.getSessionsByMovieId(sessionFilterDto);
     }
 
+    @Get(":id/getSession")
+    getSession(@Param('id',ParseIntPipe) id:number) {
+      return this.sessionsService.getSession(id);
+    }
+
     @Delete('/:id/deleteSession')
     deleteMovie(@Param('id',ParseIntPipe) id:number){
         return this.sessionsService.deleteSession(id);

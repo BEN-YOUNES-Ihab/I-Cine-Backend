@@ -97,4 +97,13 @@ export class SessionsService {
         })
         return sessions;
     }
+
+    async getSession(id: number){
+        const sessions = await this.prismaService.session.findMany({
+            where:{
+                id : id
+            },include : {movie:true}
+        })
+        return sessions;
+    }
 }

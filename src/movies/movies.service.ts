@@ -127,7 +127,6 @@ export class MoviesService {
     }
 
     async uploadMovieImage(movieId : number,file: Express.Multer.File){
-        console.log('hihoo')
         if(!file){
             throw new NotFoundException('No file');
         }
@@ -139,7 +138,6 @@ export class MoviesService {
             console.log(e);
         }
         const uploadedFile = await this.cloudinaryService.uploadFile(file);
-        console.log(uploadedFile);
         const movie = await this.prismaService.movie.update({
             where:{id: movieId},
             data: {
