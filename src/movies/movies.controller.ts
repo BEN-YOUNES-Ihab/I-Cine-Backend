@@ -38,22 +38,10 @@ export class MoviesController {
     return this.movieService.deleteMovie(id);
   }
 
-<<<<<<< HEAD
-    @Get(':id/getMovie')
-    getMovie(@Param('id', ParseIntPipe) id: number){
-        return this.movieService.getMovie(id);
-    }
-
-    @Get("/getMoviesList")
-    getMoviesList(@Query() movieFilterDto: FilterDto) {
-      return this.movieService.getMovies(movieFilterDto);
-    }
-=======
   @Get('/getMoviesList')
   getMoviesList(@Query() movieFilterDto: FilterDto) {
     return this.movieService.getMovies(movieFilterDto);
   }
->>>>>>> 9aa2475 (payement & mail)
 
   @Post('/:id/upload-image')
   @UseInterceptors(FileInterceptor('file'))

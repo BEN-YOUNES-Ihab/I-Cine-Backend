@@ -12,25 +12,6 @@ export class MoviesService {
     private cloudinaryService: CloudinaryService,
   ) {}
 
-<<<<<<< HEAD
-    async createMovie(dto: movieDto){
-        let date;
-        if(typeof dto.releaseDate === "string"){
-            date= dto.releaseDate;
-        }else{
-            date= dto.releaseDate[0]
-        }
-        const movie = await this.prismaService.movie.create({
-            data:{ 
-                title:dto.title,
-                description:dto.description,
-                releaseDate:new Date(date),
-                onDisplay:dto.onDisplay,
-                category:dto.category
-            }
-        });
-        return movie
-=======
   async createMovie(dto: movieDto) {
     const movie = await this.prismaService.movie.create({
       data: {
@@ -72,7 +53,6 @@ export class MoviesService {
         { title: { contains: keyword } },
         { category: { contains: keyword } },
       ];
->>>>>>> 9aa2475 (payement & mail)
     }
 
     const movies = await this.prismaService.movie.findMany({
@@ -117,37 +97,6 @@ export class MoviesService {
     }
   }
 
-<<<<<<< HEAD
-    async updateMovie(id:number, dto: updateMovieFormDto){
-        let date;
-        if(typeof dto.releaseDate === "string"){
-            date= dto.releaseDate;
-        }else{
-            date= dto.releaseDate[0]
-        }
-        try{
-            const movie = await this.prismaService.movie.update({
-                where:{
-                    id:id
-                },
-                data: { 
-                    title:dto.title,
-                    description:dto.description,
-                    releaseDate:new Date(date),
-                    onDisplay:dto.onDisplay,
-                    category:dto.category,
-                    updatedAt: new Date()
-                },
-            })
-            return movie
-        }catch(e){
-            if(e instanceof PrismaClientKnownRequestError){
-                if(e.code ==='P2025'){
-                    throw new NotFoundException('Author not found.');
-                }
-                console.log(e);
-            }            
-=======
   async deleteMovie(id: number) {
     try {
       const movie = await this.prismaService.movie.delete({
@@ -158,7 +107,6 @@ export class MoviesService {
       if (e instanceof PrismaClientKnownRequestError) {
         if (e.code === 'P2025') {
           throw new NotFoundException('Author not found.');
->>>>>>> 9aa2475 (payement & mail)
         }
         console.log(e);
       }
@@ -170,29 +118,6 @@ export class MoviesService {
     if (!file) {
       throw new NotFoundException('No file');
     }
-<<<<<<< HEAD
-
-    async uploadMovieImage(movieId : number,file: Express.Multer.File){
-        if(!file){
-            throw new NotFoundException('No file');
-        }
-        try{
-            const movie_before = await this.getMovie(movieId);
-            await this.cloudinaryService.deleteFile(movie_before.imageCloudinaryPublicId);
-            
-        }catch(e){
-            console.log(e);
-        }
-        const uploadedFile = await this.cloudinaryService.uploadFile(file);
-        const movie = await this.prismaService.movie.update({
-            where:{id: movieId},
-            data: {
-                imageUrl:uploadedFile.url,
-                imageCloudinaryPublicId: uploadedFile.public_id
-            }
-        })
-        return movie;
-=======
     try {
       const movie_before = await this.getMovie(movieId);
       await this.cloudinaryService.deleteFile(
@@ -200,7 +125,6 @@ export class MoviesService {
       );
     } catch (e) {
       console.log(e);
->>>>>>> 9aa2475 (payement & mail)
     }
     const uploadedFile = await this.cloudinaryService.uploadFile(file);
     console.log(uploadedFile);
