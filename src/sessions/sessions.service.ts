@@ -5,9 +5,20 @@ import { updateSessionFormDto } from './dtos/update_session.dto';
 
 @Injectable()
 export class SessionsService {
+  constructor(private prismaService: PrismaService) {}
 
-    constructor(private prismaService : PrismaService){}
+  async createSession(dto: sessionDto) {
+    const sesssion = await this.prismaService.session.create({
+      data: {
+        date: new Date(dto.date),
+        places: dto.places,
+        movieId: dto.movieId,
+      },
+    });
+    return sesssion;
+  }
 
+<<<<<<< HEAD
     async createSession(dto: sessionDto){
         let date;
         if(typeof dto.date === "string"){
@@ -50,16 +61,63 @@ export class SessionsService {
           take: parseInt(size),
         });
         const totalElements = await this.prismaService.session.count({ where });
+=======
+  async getSessionsByMovieId(sessionFilterDto: FilterDto) {
+    const { movieId, keyword, page = '1', size = '10' } = sessionFilterDto;
 
-        const totalPages = Math.ceil(totalElements / parseInt(size));
+    const skip = (parseInt(page) - 1) * parseInt(size);
+    console.log(movieId);
+    const where = {};
 
-        return{
-            content: sessions,
-            totalElements: totalElements,
-            totalPages:totalPages
-        };
+    where['movieId'] = +movieId;
+
+    if (keyword) {
+      where['OR'] = [
+        { title: { contains: keyword } },
+        { category: { contains: keyword } },
+      ];
     }
 
+    const sessions = await this.prismaService.session.findMany({
+      where,
+      skip,
+      take: parseInt(size),
+    });
+    const totalElements = await this.prismaService.session.count({ where });
+
+    const totalPages = Math.ceil(totalElements / parseInt(size));
+
+    return {
+      content: sessions,
+      totalElements: totalElements,
+      totalPages: totalPages,
+    };
+  }
+>>>>>>> 9aa2475 (payement & mail)
+
+  async updateSession(id: number, dto: updateSessionFormDto) {
+    const session = await this.prismaService.session.update({
+      where: {
+        id: id,
+      },
+      data: {
+        date: new Date(dto.date),
+        places: dto.places,
+        movieId: dto.movieId,
+        updatedAt: new Date(),
+      },
+    });
+    return session;
+  }
+
+  async deleteSession(id: number) {
+    const session = await this.prismaService.session.delete({
+      where: { id: id },
+    });
+    return { message: 'Deleted Successfuly' };
+  }
+
+<<<<<<< HEAD
     async updateSession(id:number, dto: updateSessionFormDto){
         let date;
         if(typeof dto.date === "string"){
@@ -106,4 +164,15 @@ export class SessionsService {
         })
         return sessions;
     }
+=======
+  async getSessionsbyMovie(movieId: number) {
+    const sessions = await this.prismaService.session.findMany({
+      where: {
+        movieId: movieId,
+      },
+      include: { movie: true },
+    });
+    return sessions;
+  }
+>>>>>>> 9aa2475 (payement & mail)
 }

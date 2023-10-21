@@ -5,13 +5,14 @@ import { updateSessionFormDto } from './dtos/update_session.dto';
 
 @Controller('sessions')
 export class SessionsController {
-    constructor(private sessionsService: SessionsService){}
+  constructor(private sessionsService: SessionsService) {}
 
-    @Post('/createSession')
-    creatSession(@Body() dto: sessionDto){
-        return this.sessionsService.createSession(dto);
-    }
+  @Post('/createSession')
+  creatSession(@Body() dto: sessionDto) {
+    return this.sessionsService.createSession(dto);
+  }
 
+<<<<<<< HEAD
     @Patch('/:id/updateSession')
     updateMovie(@Param('id',ParseIntPipe) id:number, @Body() dto: updateSessionFormDto){
         return this.sessionsService.updateSession(id, dto);
@@ -31,4 +32,10 @@ export class SessionsController {
     deleteMovie(@Param('id',ParseIntPipe) id:number){
         return this.sessionsService.deleteSession(id);
     }
+=======
+  @Get('/getSessionsByMovieId')
+  getSessionsByMovieId(@Query() sessionFilterDto: FilterDto) {
+    return this.sessionsService.getSessionsByMovieId(sessionFilterDto);
+  }
+>>>>>>> 9aa2475 (payement & mail)
 }

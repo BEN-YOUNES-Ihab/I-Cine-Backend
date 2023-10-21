@@ -1,24 +1,33 @@
-import { IsString, MinLength, IsNotEmpty, ValidateIf, IsInt, IsDate, IsBoolean, IsOptional } from "class-validator";
+import { IsString, IsNotEmpty, IsInt, IsOptional } from 'class-validator';
 
 export class sessionDto {
+<<<<<<< HEAD
     
     @IsNotEmpty()
     date
+=======
+  @IsString()
+  @IsNotEmpty()
+  date;
+>>>>>>> 9aa2475 (payement & mail)
 
-    @IsNotEmpty()
-    places
+  @IsNotEmpty()
+  places;
 
-    @IsNotEmpty()
-    @IsInt()
-    movieId
-
+  @IsNotEmpty()
+  @IsInt()
+  movieId;
 }
 export class FilterDto {
+  @IsNotEmpty()
+  @IsString()
+  movieId: string;
 
-    @IsNotEmpty()
-    @IsString()
-    movieId: string
+  @IsOptional()
+  @IsString()
+  keyword?: string;
 
+<<<<<<< HEAD
     @IsOptional()
     @IsString()
     minDate?: string;
@@ -33,3 +42,11 @@ export class FilterDto {
     @IsOptional()
     size?: string;
   }
+=======
+  @IsOptional()
+  page?: string;
+
+  @IsOptional()
+  size?: string;
+}
+>>>>>>> 9aa2475 (payement & mail)
