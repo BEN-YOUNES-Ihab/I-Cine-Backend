@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { FilterDto, movieDto } from './dtos/movies.dto';
+import { FilterDto, movieCategoryFilterDto, movieDto } from './dtos/movies.dto';
 import { updateMovieFormDto } from './dtos/update_movie.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
@@ -64,8 +64,44 @@ export class MoviesService {
           where,
           skip,
           take: parseInt(size),
+          orderBy: {
+            id: 'desc', 
+          },
         });
-        const totalElements = await this.prismaService.movie.count({ where }); // Count all matching records.
+        const totalElements = await this.prismaService.movie.count({ where }); 
+
+        const totalPages = Math.ceil(totalElements / parseInt(size));
+
+        return{
+            content: movies,
+            totalElements: totalElements,
+            totalPages:totalPages
+        };
+    }
+
+    async getMoviesByCategory(movieCategoryFilterDto : movieCategoryFilterDto){
+        const { title, category, page = '1', size = '10' } = movieCategoryFilterDto;
+    
+        const skip = (parseInt(page) - 1) * parseInt(size);
+    
+        const where = {};
+
+        if (title) {
+            where['title'] = { contains: title };
+        }
+        if (category) {
+            where['category'] = { contains: category };
+        } 
+    
+        const movies = await this.prismaService.movie.findMany({
+          where,
+          skip,
+          take: parseInt(size),
+          orderBy: {
+            releaseDate: 'desc', 
+          },
+        });
+        const totalElements = await this.prismaService.movie.count({ where }); 
 
         const totalPages = Math.ceil(totalElements / parseInt(size));
 

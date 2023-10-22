@@ -32,3 +32,20 @@ export class FilterDto {
     @IsOptional()
     size?: string;
   }
+
+  export class movieCategoryFilterDto{
+
+    @IsOptional()
+    @IsString()
+    title?: string;
+  
+    @IsOptional()
+    @IsString()
+    category
+
+    @IsOptional()
+    page?: string;
+  
+    @IsOptional()
+    size?: string;
+  }

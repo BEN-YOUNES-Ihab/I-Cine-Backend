@@ -1,6 +1,6 @@
 import { Body, Controller,Get ,Param,ParseIntPipe,Patch,Post, Delete, UploadedFile, UseInterceptors, Query, } from '@nestjs/common';
 import { MoviesService } from './movies.service';
-import { FilterDto, movieDto } from './dtos/movies.dto';
+import { FilterDto, movieDto, movieCategoryFilterDto } from './dtos/movies.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { updateMovieFormDto } from './dtos/update_movie.dto';
 
@@ -32,6 +32,11 @@ export class MoviesController {
     @Get("/getMoviesList")
     getMoviesList(@Query() movieFilterDto: FilterDto) {
       return this.movieService.getMovies(movieFilterDto);
+    }
+
+    @Get("/getMoviesListbyCategory")
+    getMoviesListbyCategory(@Query() movieCategoryFilterDto: movieCategoryFilterDto) {
+      return this.movieService.getMoviesByCategory(movieCategoryFilterDto);
     }
 
     @Post('/:id/upload-image')

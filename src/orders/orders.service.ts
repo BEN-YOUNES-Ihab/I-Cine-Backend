@@ -41,7 +41,10 @@ export class OrdersService {
           where,
           skip,
           take: parseInt(size),
-          include:{user:true}
+          include:{user:true},
+          orderBy: {
+            createdAt: 'desc', 
+          },
         });
 
         const totalElements = await this.prismaService.order.count({ where });
@@ -90,6 +93,9 @@ export class OrdersService {
                         movie: true,
                     },
                 },
+            },
+            orderBy: {
+                createdAt: 'desc', 
             },
         });
         const totalElements = await this.prismaService.order.count({ where });

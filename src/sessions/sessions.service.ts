@@ -48,6 +48,9 @@ export class SessionsService {
           where,
           skip,
           take: parseInt(size),
+          orderBy: {
+            date: 'desc', 
+          },
         });
         const totalElements = await this.prismaService.session.count({ where });
 
