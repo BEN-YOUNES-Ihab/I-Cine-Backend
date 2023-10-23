@@ -39,7 +39,7 @@ export class MoviesService {
         }catch(e){
             if(e instanceof PrismaClientKnownRequestError){
                 if(e.code ==='P2025'){
-                    throw new NotFoundException('Author not found.');
+                    throw new NotFoundException('Movie not found.');
                 }
                 console.log(e);
             }      
@@ -137,7 +137,7 @@ export class MoviesService {
         }catch(e){
             if(e instanceof PrismaClientKnownRequestError){
                 if(e.code ==='P2025'){
-                    throw new NotFoundException('Author not found.');
+                    throw new NotFoundException('Movie not found.');
                 }
                 console.log(e);
             }            
@@ -154,7 +154,7 @@ export class MoviesService {
         }catch(e){
             if(e instanceof PrismaClientKnownRequestError){
                 if(e.code ==='P2025'){
-                    throw new NotFoundException('Author not found.');
+                    throw new NotFoundException('Movie not found.');
                 }
                 console.log(e);
             }            

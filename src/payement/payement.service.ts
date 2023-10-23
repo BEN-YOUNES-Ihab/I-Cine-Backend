@@ -1,69 +1,131 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { EmailService } from 'src/email/email.service';
 import Stripe from 'stripe';
+import { queryCheckoutDto } from './dtos/payment.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { EmailService } from 'src/email/email.service';
 
 export const HAS_STOCK = true;
 
 @Injectable()
 export class PayementService {
+
   private stripe: Stripe = new Stripe(
-    'sk_test_51O2UBEJfd7lFqFGV1hW7SA3lj0PXiNG99JUqI8IU0WfFdOxpWFQYF1hMvqTONSgmg3W3BSzhOlNQsjzQUEMReULI00EQdUzE4z',
-    { apiVersion: '2023-10-16' },
+    "sk_test_51O2URIG1GoQo03KTsGyHuaaVoe2lPwATH3f9hU8RyhlVp2NYVZhKc93VEHW4R8zz10pNOmNXXlANEcZ8w6EycgI200mvroSvYK",
+    { apiVersion: "2023-10-16" },
   );
-  constructor(private emailService: EmailService) {}
-  async createCheckout() {
-    const YOUR_DOMAIN = 'http://localhost:3000';
+
+  constructor(
+    private prismaService: PrismaService, 
+    private emailService: EmailService) {}
+
+
+
+  async createCheckout(queryCheckoutDto : queryCheckoutDto) {
+    const { places, queryPrice, sessionIdFront, userId } = queryCheckoutDto;
     const product = await this.stripe.products.create({
-      name: 'Tezezeze',
+      name: 'Ticket',
     });
     const price = await this.stripe.prices.create({
       product: product.id,
       currency: 'eur',
-      unit_amount: 3900000,
+      unit_amount: +queryPrice,
     });
     const session = await this.stripe.checkout.sessions.create({
       line_items: [
         {
           price: price.id,
-          quantity: 1,
+          quantity: +places,
         },
       ],
       payment_intent_data: {
         capture_method: 'manual',
       },
       mode: 'payment',
-      success_url: `${YOUR_DOMAIN}/payement/success-payment-handler?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${YOUR_DOMAIN}/fail.html`,
+      success_url: `${process.env.DOMAIN}payement/success-payment-handler?session_id={CHECKOUT_SESSION_ID}&sessionIdFront=${sessionIdFront}&places=${places}&userId=${userId}`,
+      cancel_url: `${process.env.DOMAIN}fail.html`,
     });
     return {
       url: session.url,
     };
   }
 
+
   async successPaymentHandler(req: Request, res: Response) {
+    //get req query values
+    const sessionIdFront = +req.query.sessionIdFront;
+    const places = +req.query.places;
+    const userId = +req.query.userId;
     const session_id = req.query.session_id;
+    //get Stripe sessionId
     const session = await this.stripe.checkout.sessions.retrieve(
       session_id as string,
     );
-
-    if (HAS_STOCK) {
+    //get Movie session
+    const currentSession = await this.prismaService.session.findUnique({
+      where: {
+        id: sessionIdFront,
+      },include:{movie:true}
+    });
+    //get new remaning places
+    const newremaningPlaces = currentSession.places - places
+    // if in stock
+    if (newremaningPlaces >= 0) {
       const paymentIntent = await this.stripe.paymentIntents.capture(
         session.payment_intent as string,
       );
-
       if (paymentIntent.status == 'succeeded') {
-        console.log(session.customer_details.email);
-        this.emailService.send(
-          session.customer_details.email,
-          "Merci pour l'achat !",
-          `Bonjour ${
-            session.customer_details.name
-          }, Merci pour votre achat d'une valeur de ${
-            session.amount_total / 100
-          } euros`,
-        );
-        res.redirect('http://localhost:4200/pages/basket-success.html');
+
+
+         // create an order
+         const order = await this.prismaService.order.create({
+          data:{ 
+              places: places,
+              amount: 10,
+              sessionId: sessionIdFront,
+              userId: userId,
+          }
+          });
+          // remaningPlaces --
+          await this.prismaService.session.update({
+            where: {
+              id: sessionIdFront,
+            },
+            data: {
+              remaningPlaces: newremaningPlaces,
+            },
+          });
+          // send email
+          const reservationDetails = {
+              filmName: currentSession.movie.title,
+              date: currentSession.date,
+              nombreBillets: places,
+              numeroReservation: order.id,
+              nomClient:session.customer_details.name
+            };
+
+            const emailContent = `
+              Cher(e) ${reservationDetails.nomClient},<br>
+              <br>
+              Nous vous confirmons la réservation suivante chez I-Ciné :<br>
+              <br>
+              - Film : ${reservationDetails.filmName}<br>
+              - Date : ${reservationDetails.date}<br>
+              - Billets réservés : ${reservationDetails.nombreBillets}<br>
+              <br>
+              Numéro de Réservation : ${reservationDetails.numeroReservation}<br>
+              <br>
+              Nous sommes impatients de vous accueillir pour cette séance. Veuillez vous présenter au cinéma au moins 30 minutes avant le début de la séance.
+              <br>
+              Pour toute question ou assistance, contactez-nous au 0632323454.<br>
+              <br>
+              Merci de choisir I-Ciné pour votre sortie cinéma.
+            `;
+        //redirect
+        await this.emailService.sendEmail(emailContent,session.customer_details.email);
+
+        res.redirect(`http://localhost:4200/pages/${sessionIdFront}/order?status=success&orderId=${order.id}`);
         return;
       }
     } else {
@@ -71,11 +133,11 @@ export class PayementService {
         session.payment_intent as string,
       );
       if (paymentIntent.status == 'canceled') {
-        res.redirect('http://localhost:4200/basket-fail-stock.html');
+        res.redirect(`http://localhost:4200/pages/${sessionIdFront}?status=fail-stock`);
         return;
       }
     }
-    res.redirect('http://localhost:4200/basket-fail.html');
+    res.redirect(`http://localhost:4200/pages/${sessionIdFront}?status=fail`);
     return;
   }
 }

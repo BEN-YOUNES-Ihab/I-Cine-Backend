@@ -19,6 +19,7 @@ export class SessionsService {
             data:{ 
                 date:new Date(date),
                 places:dto.places,
+                remaningPlaces: dto.remaningPlaces,
                 movieId:dto.movieId
             }
         });
@@ -50,7 +51,7 @@ export class SessionsService {
           take: parseInt(size),
           orderBy: {
             date: 'desc', 
-          },
+          },include:{orders:true}
         });
         const totalElements = await this.prismaService.session.count({ where });
 
@@ -77,6 +78,7 @@ export class SessionsService {
             data: {
                 date:new Date(date),
                 places:dto.places,
+                remaningPlaces: dto.remaningPlaces,
                 movieId:dto.movieId,
                 updatedAt: new Date()
             },

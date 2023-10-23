@@ -6,7 +6,8 @@ import { MoviesModule } from './movies/movies.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { SessionsModule } from './sessions/sessions.module';
 import { OrdersModule } from './orders/orders.module';
-
+import { EmailModule } from './email/email.module';
+import { PayementModule } from './payement/payement.module';
 @Module({
   imports: [
     PrismaModule, 
@@ -15,7 +16,10 @@ import { OrdersModule } from './orders/orders.module';
     MoviesModule, 
     CloudinaryModule, 
     SessionsModule, 
-    OrdersModule],
+    OrdersModule,
+    EmailModule,
+    PayementModule,
+  ],
   controllers: [],
   providers: [],
 })

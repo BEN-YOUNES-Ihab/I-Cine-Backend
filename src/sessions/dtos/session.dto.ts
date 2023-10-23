@@ -9,6 +9,9 @@ export class sessionDto {
   places;
 
   @IsNotEmpty()
+  remaningPlaces;
+
+  @IsNotEmpty()
   @IsInt()
   movieId;
 }
