@@ -13,6 +13,11 @@ export class OrdersController {
         return this.ordersService.createOrder(dto);
     }
 
+    @Get(":id/getOrderById")
+    getOrderById( @Param('id',ParseIntPipe) id:number) {
+      console.log(id)
+      return this.ordersService.getOrderById(+id);
+    }
 
     @Get("/getOrdersList")
     getOrdersList(@Query() filterDto: FilterDto) {

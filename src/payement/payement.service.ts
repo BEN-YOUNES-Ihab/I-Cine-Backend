@@ -23,14 +23,14 @@ export class PayementService {
 
 
   async createCheckout(queryCheckoutDto : queryCheckoutDto) {
-    const { places, queryPrice, sessionIdFront, userId } = queryCheckoutDto;
+    const { places, sessionIdFront, userId } = queryCheckoutDto;
     const product = await this.stripe.products.create({
       name: 'Ticket',
     });
     const price = await this.stripe.prices.create({
       product: product.id,
       currency: 'eur',
-      unit_amount: +queryPrice,
+      unit_amount: 1000,
     });
     const session = await this.stripe.checkout.sessions.create({
       line_items: [
@@ -87,7 +87,7 @@ export class PayementService {
               userId: userId,
           }
           });
-          // remaningPlaces --
+          // modifier remaningPlaces
           await this.prismaService.session.update({
             where: {
               id: sessionIdFront,

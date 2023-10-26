@@ -4,6 +4,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { FilterDto, movieCategoryFilterDto, movieDto } from './dtos/movies.dto';
 import { updateMovieFormDto } from './dtos/update_movie.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import multer from 'multer';
 
 @Injectable()
 export class MoviesService {
@@ -179,6 +180,60 @@ export class MoviesService {
             data: {
                 imageUrl:uploadedFile.url,
                 imageCloudinaryPublicId: uploadedFile.public_id
+            }
+        })
+        return movie;
+    }
+
+    async uploadMovieBaniereImage(movieId : number,file: Express.Multer.File){
+        if(!file){
+            throw new NotFoundException('No file');
+        }
+        try{
+            const movie_before = await this.getMovie(movieId);
+            await this.cloudinaryService.deleteFile(movie_before.imageCloudinaryPublicId);
+            
+        }catch(e){
+            console.log(e);
+        }
+        const uploadedFile = await this.cloudinaryService.uploadFile(file);
+        const movie = await this.prismaService.movie.update({
+            where:{id: movieId},
+            data: {
+                baniereImageUrl:uploadedFile.url,
+                baniereImageCloudinaryPublicId: uploadedFile.public_id
+            }
+        })
+        return movie;
+    }
+
+    async uploadMovieImages(movieId : number,file: Express.Multer.File, secondFile:Express.Multer.File){
+        if(!file || !secondFile){
+            throw new NotFoundException('No files');
+        }
+        console.log(file)
+        console.log(secondFile)
+        try{
+            const movie_before = await this.getMovie(movieId);
+            await this.cloudinaryService.deleteFile(movie_before.imageCloudinaryPublicId);
+            await this.cloudinaryService.deleteFile(movie_before.baniereImageCloudinaryPublicId);
+        }catch(e){
+            console.log(e);
+        }
+        console.log("A")
+        const uploadedFile = await this.cloudinaryService.uploadFile(file);
+        console.log("B")
+
+        const uploadedSecondFile = await this.cloudinaryService.uploadFile(secondFile);
+        console.log("C")
+
+        const movie = await this.prismaService.movie.update({
+            where:{id: movieId},
+            data: {
+                imageUrl:uploadedFile.url,
+                imageCloudinaryPublicId: uploadedFile.public_id,
+                baniereImageUrl:uploadedSecondFile.url,
+                baniereImageCloudinaryPublicId:uploadedSecondFile.public_id
             }
         })
         return movie;

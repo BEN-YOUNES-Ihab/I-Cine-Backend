@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import { SessionsService } from './sessions.service';
-import { FilterDto, sessionDto } from './dtos/session.dto';
+import { FilterDto, FilterUserDto, sessionDto } from './dtos/session.dto';
 import { updateSessionFormDto } from './dtos/update_session.dto';
 
 @Controller('sessions')
@@ -17,6 +17,11 @@ export class SessionsController {
         return this.sessionsService.updateSession(id, dto);
     }
     
+    @Get("/getSessionsByMovieIdUser")
+    getSessionsByMovieIdUser(@Query() sessionFilterDto: FilterUserDto) {
+      return this.sessionsService.getSessionsByMovieIdUser(sessionFilterDto);
+    }
+
     @Get("/getSessionsByMovieId")
     getSessionsByMovieId(@Query() sessionFilterDto: FilterDto) {
       return this.sessionsService.getSessionsByMovieId(sessionFilterDto);

@@ -38,3 +38,17 @@ export class FilterDto {
     @IsOptional()
     size?: string;
   }
+
+
+  export class FilterUserDto {
+    @IsNotEmpty()
+    @IsString()
+    movieId: string;
+  
+
+  
+    @IsOptional()
+    @IsString()
+    date?: string;
+
+    }

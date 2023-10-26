@@ -5,9 +5,6 @@ export class queryCheckoutDto {
     places: string;
 
     @IsNotEmpty()
-    queryPrice: string;
-
-    @IsNotEmpty()
     sessionIdFront: string;
 
     @IsNotEmpty()

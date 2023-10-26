@@ -1,8 +1,9 @@
-import { Body, Controller,Get ,Param,ParseIntPipe,Patch,Post, Delete, UploadedFile, UseInterceptors, Query, } from '@nestjs/common';
+import { Body, Controller,Get ,Param,ParseIntPipe,Patch,Post, Delete, UploadedFile, UseInterceptors, Query, UploadedFiles, NotFoundException, } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { FilterDto, movieDto, movieCategoryFilterDto } from './dtos/movies.dto';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 import { updateMovieFormDto } from './dtos/update_movie.dto';
+import { throwError } from 'rxjs';
 
 @Controller('movies')
 export class MoviesController {
@@ -39,9 +40,25 @@ export class MoviesController {
       return this.movieService.getMoviesByCategory(movieCategoryFilterDto);
     }
 
-    @Post('/:id/upload-image')
-    @UseInterceptors(FileInterceptor('file'))
-    uploadMovieImage(@UploadedFile() file: Express.Multer.File,@Param('id',ParseIntPipe) bookId:number){
-        return this.movieService.uploadMovieImage(bookId, file);
+    @Post('/:id/upload-images')
+    @UseInterceptors(FileFieldsInterceptor([
+        { name: 'file' , maxCount: 1 },
+        { name: 'secondFile', maxCount: 1 },
+      ]))
+    uploadMovieImage(@UploadedFiles() files: { file?: Express.Multer.File[], secondFile?: Express.Multer.File[] },@Param('id',ParseIntPipe) movieId:number){
+        console.log(files.file)
+        console.log(files.secondFile)
+        
+        if(files.file == null && files.secondFile ==null){
+            throw new NotFoundException('No files');
+        }else if(files.file == null){
+            return this.movieService.uploadMovieBaniereImage(movieId, files.secondFile[0]);
+        }else if(files.secondFile == null){
+            return this.movieService.uploadMovieImage(movieId, files.file[0]);
+        }
+        return this.movieService.uploadMovieImages(movieId, files.file[0], files.secondFile[0]);
     }
+
+
+    
 }

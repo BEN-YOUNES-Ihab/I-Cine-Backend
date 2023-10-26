@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { FilterDto, sessionDto } from './dtos/session.dto';
+import { FilterDto, FilterUserDto, sessionDto } from './dtos/session.dto';
 import { updateSessionFormDto } from './dtos/update_session.dto';
 
 @Injectable()
@@ -24,6 +24,37 @@ export class SessionsService {
             }
         });
         return sesssion
+    }
+    async getSessionsByMovieIdUser(sessionFilterDto: FilterUserDto) {
+        const { movieId, date } = sessionFilterDto;
+      
+        const where = {};
+        where['movieId'] = +movieId;
+
+        if (date) {
+            let newMinDate = new Date(date);
+            let newMaxDate = new Date(date);
+
+            let filterMinDate = new Date(newMinDate.setHours(0,0,0,0));
+            let filterMaxDate = new Date(newMaxDate.setHours(23,59,59,10));
+
+            where['OR'] = [
+                { date: { gte: filterMinDate, lte: filterMaxDate } }
+            ];
+        }
+      
+        const sessions = await this.prismaService.session.findMany({
+          where,
+          orderBy: {
+            date: 'asc',
+          },
+          include: {
+            orders: true,
+            movie: true,
+          },
+        });
+      
+        return sessions;
     }
 
     async getSessionsByMovieId(sessionFilterDto : FilterDto){
@@ -51,7 +82,7 @@ export class SessionsService {
           take: parseInt(size),
           orderBy: {
             date: 'desc', 
-          },include:{orders:true}
+          },include:{orders:true,movie:true}
         });
         const totalElements = await this.prismaService.session.count({ where });
 

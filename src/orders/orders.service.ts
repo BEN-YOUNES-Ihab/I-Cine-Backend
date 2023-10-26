@@ -22,6 +22,23 @@ export class OrdersService {
         return order
     }
 
+    async getOrderById(id:number){
+        console.log(id)
+        const order = await this.prismaService.order.findUnique({
+            where:{
+                id:id
+            },
+            include: {
+                session: {
+                    include: {
+                        movie: true,
+                    },
+                },
+            },
+        });
+        console.log(order);
+        return order;
+    }
 
     async getOrdersList(filterDto : FilterDto){
         const {keyword ,sessionId, page = '1', size = '10' } = filterDto;
