@@ -53,7 +53,8 @@ export class UsersService {
             where:{email:email
         }});
         if(user){
-            if(await bcrypt.compare(password,user.hashed_password)){
+            const response = await bcrypt.compare(password,user.hashed_password)
+            if(response){
                 return true;
             }
         }
@@ -64,22 +65,23 @@ export class UsersService {
         if(dto.password != dto.confirm_password){
             throw new BadRequestException('Confirm does not correspond to password');
         }
+        let validate = await this.validatePassword(email,dto.old_password);
+        if(!validate){
+            throw new BadRequestException('Old password does not correspond to password');
+        }
         try{
-            if(this.validatePassword(email,dto.old_password)){
+            if(validate){
                 const user = await this.prismaService.user.update({
                     where:{
                         email:email
                     },
                     data: {
-                      hashed_password : await bcrypt.hash(dto.password, 10),
-                      updatedAt: new Date()
+                        hashed_password : await bcrypt.hash(dto.password, 10),
+                        updatedAt: new Date()
                     },
                 })
                 return user
-            }else{
-                throw new BadRequestException('Old password does not correspond to password');
             }
-            
         }catch(e){
             if(e instanceof PrismaClientKnownRequestError){
                 if(e.code ==='P2025'){
