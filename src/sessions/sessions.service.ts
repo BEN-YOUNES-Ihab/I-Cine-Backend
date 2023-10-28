@@ -27,22 +27,31 @@ export class SessionsService {
     }
     async getSessionsByMovieIdUser(sessionFilterDto: FilterUserDto) {
         const { movieId, date } = sessionFilterDto;
+        const where = {
+            movieId: +movieId,
+          };
+          if (date) {
+              let newDate = new Date(date);
+              let currentDate = new Date();
+              let filterMinDate;
+              console.log(currentDate);
+              if (
+                newDate.getDate() === currentDate.getDate() &&
+                newDate.getMonth() === currentDate.getMonth() &&
+                newDate.getFullYear() === currentDate.getFullYear()
+              ) {
+                filterMinDate = currentDate;
+              } else {
+                filterMinDate = new Date(newDate.setHours(0, 0, 0, 0));
+              }
+              let filterMaxDate = new Date(newDate.setHours(23, 59, 59, 999));
       
-        const where = {};
-        where['movieId'] = +movieId;
+              where['date'] = {
+                  gte: filterMinDate,
+                  lte: filterMaxDate,
+              };
+          }
 
-        if (date) {
-            let newMinDate = new Date(date);
-            let newMaxDate = new Date(date);
-
-            let filterMinDate = new Date(newMinDate.setHours(0,0,0,0));
-            let filterMaxDate = new Date(newMaxDate.setHours(23,59,59,10));
-
-            where['OR'] = [
-                { date: { gte: filterMinDate, lte: filterMaxDate } }
-            ];
-        }
-      
         const sessions = await this.prismaService.session.findMany({
           where,
           orderBy: {

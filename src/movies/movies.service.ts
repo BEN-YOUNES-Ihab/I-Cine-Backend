@@ -46,6 +46,20 @@ export class MoviesService {
             }      
         }
     }    
+    async getMovieWithSessions(id : number){
+        try{
+
+        const movie = await this.prismaService.movie.findUnique({where :{id:id},include:{sessions:true}})
+        return movie
+        }catch(e){
+            if(e instanceof PrismaClientKnownRequestError){
+                if(e.code ==='P2025'){
+                    throw new NotFoundException('Movie not found.');
+                }
+                console.log(e);
+            }      
+        }
+    }  
 
     async getMovies(movieFilterDto : FilterDto){
         const { keyword, page = '1', size = '10' } = movieFilterDto;

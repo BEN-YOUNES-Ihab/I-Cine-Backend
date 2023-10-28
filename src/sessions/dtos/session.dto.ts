@@ -47,8 +47,8 @@ export class FilterDto {
   
 
   
-    @IsOptional()
+    @IsNotEmpty()
     @IsString()
-    date?: string;
+    date: string;
 
     }

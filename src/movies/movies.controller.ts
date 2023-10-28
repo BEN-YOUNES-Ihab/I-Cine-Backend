@@ -30,6 +30,11 @@ export class MoviesController {
         return this.movieService.getMovie(id);
     }
 
+    @Get(':id/getMovieWithSessions')
+    getMovieWithSessions(@Param('id', ParseIntPipe) id: number){
+        return this.movieService.getMovieWithSessions(id);
+    }
+
     @Get("/getMoviesList")
     getMoviesList(@Query() movieFilterDto: FilterDto) {
       return this.movieService.getMovies(movieFilterDto);
