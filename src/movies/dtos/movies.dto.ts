@@ -1,11 +1,11 @@
-import { IsString, MinLength, IsNotEmpty, ValidateIf, IsInt, IsDate, IsBoolean, IsOptional } from "class-validator";
+import { IsString, IsNotEmpty, ValidateIf, IsBoolean, IsOptional } from "class-validator";
 
 export class movieDto {
     @IsString()
     @IsNotEmpty()
     title
 
-    @IsString()
+    @IsOptional()
     @ValidateIf((object,value)=>value!==null)
     description
     

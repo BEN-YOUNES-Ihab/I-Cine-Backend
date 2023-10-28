@@ -135,6 +135,7 @@ export class UsersService {
           orderBy: {
             id: 'desc', 
           },
+          include:{orders:true}
         });
         const totalElements = await this.prismaService.user.count({ where }); // Count all matching records.
 
