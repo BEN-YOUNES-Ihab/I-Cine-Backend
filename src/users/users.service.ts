@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Body, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { UserFilterDto, UsertoEdit, UsertoEditPssword, UsertoEditRole } from './dtos/user.dto';
@@ -157,6 +157,8 @@ export class UsersService {
             if(e instanceof PrismaClientKnownRequestError){
                 if(e.code ==='P2025'){
                     throw new NotFoundException('Author not found.');
+                }else if (e.code === 'P2003'){
+                    throw new ConflictException('User have orders')
                 }
                 console.log(e);
             }            

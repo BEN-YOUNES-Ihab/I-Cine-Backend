@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FilterDto, movieCategoryFilterDto, movieDto } from './dtos/movies.dto';
@@ -81,7 +81,7 @@ export class MoviesService {
           take: parseInt(size),
           orderBy: {
             id: 'desc', 
-          },
+          },include:{sessions:true}
         });
         const totalElements = await this.prismaService.movie.count({ where }); 
 
@@ -160,22 +160,24 @@ export class MoviesService {
 
     }
 
-    async deleteMovie(id : number){
+    async deleteMovie(id: number) {
         try {
-            const movie = await this.prismaService.movie.delete({
-                where:{id:id}
-            })
-            return {message : 'Deleted Successfuly'}
-        }catch(e){
-            if(e instanceof PrismaClientKnownRequestError){
-                if(e.code ==='P2025'){
-                    throw new NotFoundException('Movie not found.');
-                }
-                console.log(e);
-            }            
+          const movie = await this.prismaService.movie.delete({ where: { id :id} });
+          await this.cloudinaryService.deleteFile(movie.imageCloudinaryPublicId);
+      
+          return { message: 'Deleted Successfuly' };
+        } catch (e) {
+          if (e instanceof PrismaClientKnownRequestError) {
+            if (e.code === 'P2025') {
+              throw new NotFoundException('Movie not found.');
+            }else if (e.code === 'P2003'){
+              throw new ConflictException('Movie have sessions')
+            }
+      
+            console.log(e);
+          }
         }
-
-    }
+      }
 
     async uploadMovieImage(movieId : number,file: Express.Multer.File){
         if(!file){

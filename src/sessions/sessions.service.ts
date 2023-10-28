@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FilterDto, FilterUserDto, sessionDto } from './dtos/session.dto';
 import { updateSessionFormDto } from './dtos/update_session.dto';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 @Injectable()
 export class SessionsService {
@@ -34,7 +35,6 @@ export class SessionsService {
               let newDate = new Date(date);
               let currentDate = new Date();
               let filterMinDate;
-              console.log(currentDate);
               if (
                 newDate.getDate() === currentDate.getDate() &&
                 newDate.getMonth() === currentDate.getMonth() &&
@@ -127,10 +127,19 @@ export class SessionsService {
     }
 
     async deleteSession(id : number){
-        const session = await this.prismaService.session.delete({
-            where:{id:id}
-        })
-        return {message : 'Deleted Successfuly'}
+        try {
+            await this.prismaService.session.delete({where:{id:id}})
+            return {message : 'Deleted Successfuly'}
+        }catch(e){
+            if(e instanceof PrismaClientKnownRequestError){
+                if(e.code ==='P2025'){
+                    throw new NotFoundException('Session not found.');
+                }else if (e.code === 'P2003'){
+                    throw new ConflictException('Session have orders')
+                }
+                console.log(e);
+            }            
+        }
     }
 
     async getSessionsbyMovie(movieId: number){
