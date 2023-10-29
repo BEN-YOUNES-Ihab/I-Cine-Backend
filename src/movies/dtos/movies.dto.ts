@@ -24,8 +24,16 @@ export class FilterDto {
 
     @IsOptional()
     @IsString()
-    keyword?: string;
-  
+    title?: string;
+
+    @IsOptional()
+    @IsString()
+    category
+
+    @IsOptional()
+    @IsString()
+    onDisplay
+        
     @IsOptional()
     page?: string;
   

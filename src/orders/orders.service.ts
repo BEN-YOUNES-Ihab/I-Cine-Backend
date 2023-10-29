@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FilterDto, orderDto, orderFiltrobyUserDTO } from './dtos/order.dto';
 
 @Injectable()
 export class OrdersService {
     constructor(
-        private prismaService: PrismaService,
-        private cloudinaryService: CloudinaryService
+        private prismaService: PrismaService
     ){}
 
     async createOrder(dto: orderDto){
@@ -48,9 +46,9 @@ export class OrdersService {
 
         if (keyword) {
             where['OR'] = [
-              { user: { firstName: { contains: keyword } } },
-              { user: { lastName: { contains: keyword } } },
-              { user: { email: { contains: keyword } } }
+              { user: { firstName: { contains: keyword ,mode:'insensitive' } } },
+              { user: { lastName: { contains: keyword ,mode:'insensitive'} } },
+              { user: { email: { contains: keyword ,mode:'insensitive'} } }
             ];
         }
         const skip = (parseInt(page) - 1) * parseInt(size);

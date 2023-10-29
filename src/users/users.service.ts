@@ -123,10 +123,9 @@ export class UsersService {
 
         if (keyword) {
           where['OR'] = [
-            { email: { contains: keyword } },
-            { firstName: { contains: keyword } },
-            { lastName: { contains: keyword } },
-            { role: { contains: keyword } },
+            { email: { contains: keyword ,mode:'insensitive'} },
+            { firstName: { contains: keyword ,mode:'insensitive'} },
+            { lastName: { contains: keyword , mode:'insensitive'} }
           ];
         }
     

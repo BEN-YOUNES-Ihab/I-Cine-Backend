@@ -62,17 +62,24 @@ export class MoviesService {
     }  
 
     async getMovies(movieFilterDto : FilterDto){
-        const { keyword, page = '1', size = '10' } = movieFilterDto;
+        const { title,category, onDisplay, page = '1', size = '10' } = movieFilterDto;
     
         const skip = (parseInt(page) - 1) * parseInt(size);
     
         const where = {};
-
-        if (keyword) {
-          where['OR'] = [
-            { title: { contains: keyword } },
-            { category: { contains: keyword } }
-          ];
+        console.log()
+        if (title) {
+            where['title'] = { contains: title ,mode:'insensitive'};
+        }
+        if (category) {
+            where['category'] = { equals: category };
+        } 
+        if (onDisplay=='false') {
+            console.log('false')
+            where['onDisplay'] = {equals:false} ;
+        } else if (onDisplay=='true'){
+            console.log('true')
+            where['onDisplay'] = {equals:true} ;
         }
     
         const movies = await this.prismaService.movie.findMany({
@@ -102,7 +109,7 @@ export class MoviesService {
         const where = {};
 
         if (title) {
-            where['title'] = { contains: title };
+            where['title'] = { contains: title ,mode:'insensitive'};
         }
         if (category) {
             where['category'] = { contains: category };
