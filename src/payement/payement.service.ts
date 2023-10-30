@@ -104,14 +104,14 @@ export class PayementService {
               numeroReservation: order.id,
               nomClient:session.customer_details.name
             };
-
+            let emailDate = new Date(reservationDetails.date).toLocaleDateString('fr-FR', { weekday:"long", year:"numeric", month:"short", day:"numeric", hour:"numeric", minute:"numeric"}) 
             const emailContent = `
               Cher(e) ${reservationDetails.nomClient},<br>
               <br>
               Nous vous confirmons la réservation suivante chez I-Ciné :<br>
               <br>
               - Film : ${reservationDetails.filmName}<br>
-              - Date : ${reservationDetails.date}<br>
+              - Date : ${emailDate}<br>
               - Billets réservés : ${reservationDetails.nombreBillets}<br>
               <br>
               Numéro de Réservation : ${reservationDetails.numeroReservation}<br>
