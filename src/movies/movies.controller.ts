@@ -64,6 +64,8 @@ export class MoviesController {
         return this.movieService.uploadMovieImages(movieId, files.file[0], files.secondFile[0]);
     }
 
-
-    
+    @Get("/getMoviesToDisplay")
+    getMoviesToDisplay(){
+        return this.movieService.getMoviesToDisplay();
+    }
 }

@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { FilterDto, movieCategoryFilterDto, movieDto } from './dtos/movies.dto';
@@ -61,13 +61,65 @@ export class MoviesService {
         }
     }  
 
+    async getMoviesToDisplay(){
+        const today = new Date();
+
+        const toDisplayMovies = await this.prismaService.movie.findMany({
+          where: {
+            releaseDate: {
+              lte: today,
+            },
+            sessions: {
+              some: {
+                date: {
+                  gt: today,
+                },
+              },
+            },
+          },
+          orderBy: {
+            id: 'desc',
+          },
+        });
+        const beforePremiereMovies = await this.prismaService.movie.findMany({
+            where: {
+              releaseDate: {
+                gt: today,
+              },
+              sessions: {
+                some: {
+                  date: {
+                    gt: today,
+                  },
+                },
+              },
+            },
+            orderBy: {
+              id: 'desc',
+            },
+          });
+          const onDisplayMovies = await this.prismaService.movie.findMany({
+            where: {
+              onDisplay : true
+            },
+            orderBy: {
+              id: 'desc',
+            },
+          });
+        return{
+            toDisplayMovies: toDisplayMovies,
+            beforePremiereMovies: beforePremiereMovies,
+            onDisplayMovies:onDisplayMovies
+        };
+        
+    }
+
     async getMovies(movieFilterDto : FilterDto){
         const { title,category, onDisplay, page = '1', size = '10' } = movieFilterDto;
     
         const skip = (parseInt(page) - 1) * parseInt(size);
     
         const where = {};
-        console.log()
         if (title) {
             where['title'] = { contains: title ,mode:'insensitive'};
         }
@@ -75,10 +127,8 @@ export class MoviesService {
             where['category'] = { equals: category };
         } 
         if (onDisplay=='false') {
-            console.log('false')
             where['onDisplay'] = {equals:false} ;
         } else if (onDisplay=='true'){
-            console.log('true')
             where['onDisplay'] = {equals:true} ;
         }
     
