@@ -44,7 +44,7 @@ export class PayementService {
       },
       mode: 'payment',
       success_url: `${process.env.DOMAIN}payement/success-payment-handler?session_id={CHECKOUT_SESSION_ID}&sessionIdFront=${sessionIdFront}&places=${places}&userId=${userId}`,
-      cancel_url: `${process.env.DOMAIN}fail.html`,
+      cancel_url: `http://localhost:4200/pages/${sessionIdFront}/order?status=fail`,
     });
     return {
       url: session.url,
@@ -133,11 +133,11 @@ export class PayementService {
         session.payment_intent as string,
       );
       if (paymentIntent.status == 'canceled') {
-        res.redirect(`http://localhost:4200/pages/${sessionIdFront}?status=fail-stock`);
+        res.redirect(`http://localhost:4200/pages/${sessionIdFront}/order?status=fail-stock`);
         return;
       }
     }
-    res.redirect(`http://localhost:4200/pages/${sessionIdFront}?status=fail`);
+    res.redirect(`http://localhost:4200/pages/${sessionIdFront}/order?status=fail`);
     return;
   }
 }
