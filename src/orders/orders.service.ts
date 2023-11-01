@@ -21,7 +21,6 @@ export class OrdersService {
     }
 
     async getOrderById(id:number){
-        console.log(id)
         const order = await this.prismaService.order.findUnique({
             where:{
                 id:id
@@ -34,7 +33,6 @@ export class OrdersService {
                 },
             },
         });
-        console.log(order);
         return order;
     }
 

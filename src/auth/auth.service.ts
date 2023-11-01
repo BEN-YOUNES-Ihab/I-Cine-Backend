@@ -20,7 +20,6 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
   async signUp(@Body() dto: SignUpDto) {
-    console.log(dto);
     if (dto.password !== dto.confirm_password)
       throw new BadRequestException('Confirm does not correspond to password');
     try {

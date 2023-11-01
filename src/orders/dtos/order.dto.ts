@@ -20,7 +20,7 @@ export class orderDto {
 }
 export class FilterDto {
     @IsNotEmpty()
-    sessionId?: string;
+    sessionId: string;
 
     @IsOptional()
     keyword?: string;

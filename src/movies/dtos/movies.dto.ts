@@ -28,11 +28,11 @@ export class FilterDto {
 
     @IsOptional()
     @IsString()
-    category
+    category?: string;
 
     @IsOptional()
     @IsString()
-    onDisplay
+    onDisplay?: string;
         
     @IsOptional()
     page?: string;
@@ -49,7 +49,7 @@ export class FilterDto {
   
     @IsOptional()
     @IsString()
-    category
+    category?: string;
 
     @IsOptional()
     page?: string;

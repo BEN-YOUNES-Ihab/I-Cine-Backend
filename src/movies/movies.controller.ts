@@ -1,9 +1,9 @@
-import { Body, Controller,Get ,Param,ParseIntPipe,Patch,Post, Delete, UploadedFile, UseInterceptors, Query, UploadedFiles, NotFoundException, } from '@nestjs/common';
+import { Body, Controller,Get ,Param,ParseIntPipe,Patch,Post, Delete, UseGuards, UseInterceptors, Query, UploadedFiles, NotFoundException, } from '@nestjs/common';
 import { MoviesService } from './movies.service';
 import { FilterDto, movieDto, movieCategoryFilterDto } from './dtos/movies.dto';
-import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { updateMovieFormDto } from './dtos/update_movie.dto';
-import { throwError } from 'rxjs';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
 
 @Controller('movies')
 export class MoviesController {
@@ -11,21 +11,25 @@ export class MoviesController {
         private movieService: MoviesService){}
 
     @Post('/createMovie')
+    @UseGuards(JwtGuard)
     creatMovie(@Body() dto: movieDto){
         return this.movieService.createMovie(dto);
     }
 
     @Patch('/:id/updateMovie')
+    @UseGuards(JwtGuard)
     updateMovie(@Param('id',ParseIntPipe) id:number, @Body() dto: updateMovieFormDto){
         return this.movieService.updateMovie(id, dto);
     }
 
     @Delete('/:id/deleteMovie')
+    @UseGuards(JwtGuard)
     deleteMovie(@Param('id',ParseIntPipe) id:number){
         return this.movieService.deleteMovie(id);
     }
 
     @Get(':id/getMovie')
+    @UseGuards(JwtGuard)
     getMovie(@Param('id', ParseIntPipe) id: number){
         return this.movieService.getMovie(id);
     }
@@ -36,6 +40,7 @@ export class MoviesController {
     }
 
     @Get("/getMoviesList")
+    @UseGuards(JwtGuard)
     getMoviesList(@Query() movieFilterDto: FilterDto) {
       return this.movieService.getMovies(movieFilterDto);
     }
@@ -46,14 +51,12 @@ export class MoviesController {
     }
 
     @Post('/:id/upload-images')
+    @UseGuards(JwtGuard)
     @UseInterceptors(FileFieldsInterceptor([
         { name: 'file' , maxCount: 1 },
         { name: 'secondFile', maxCount: 1 },
       ]))
     uploadMovieImage(@UploadedFiles() files: { file?: Express.Multer.File[], secondFile?: Express.Multer.File[] },@Param('id',ParseIntPipe) movieId:number){
-        console.log(files.file)
-        console.log(files.secondFile)
-        
         if(files.file == null && files.secondFile ==null){
             throw new NotFoundException('No files');
         }else if(files.file == null){

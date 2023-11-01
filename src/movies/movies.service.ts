@@ -284,8 +284,6 @@ export class MoviesService {
         if(!file || !secondFile){
             throw new NotFoundException('No files');
         }
-        console.log(file)
-        console.log(secondFile)
         try{
             const movie_before = await this.getMovie(movieId);
             await this.cloudinaryService.deleteFile(movie_before.imageCloudinaryPublicId);
@@ -293,13 +291,8 @@ export class MoviesService {
         }catch(e){
             console.log(e);
         }
-        console.log("A")
         const uploadedFile = await this.cloudinaryService.uploadFile(file);
-        console.log("B")
-
         const uploadedSecondFile = await this.cloudinaryService.uploadFile(secondFile);
-        console.log("C")
-
         const movie = await this.prismaService.movie.update({
             where:{id: movieId},
             data: {

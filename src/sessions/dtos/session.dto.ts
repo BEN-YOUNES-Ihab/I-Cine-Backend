@@ -2,8 +2,8 @@ import { IsString, IsNotEmpty, IsInt, IsOptional } from 'class-validator';
 
 export class sessionDto {
     
-    @IsNotEmpty()
-    date
+  @IsNotEmpty()
+  date
 
   @IsNotEmpty()
   places;
@@ -24,19 +24,19 @@ export class FilterDto {
   @IsString()
   keyword?: string;
 
-    @IsOptional()
-    @IsString()
-    minDate?: string;
+  @IsOptional()
+  @IsString()
+  minDate?: string;
 
-    @IsOptional()
-    @IsString()
-    maxDate?: string;
-  
-    @IsOptional()
-    page?: string;
-  
-    @IsOptional()
-    size?: string;
+  @IsOptional()
+  @IsString()
+  maxDate?: string;
+
+  @IsOptional()
+  page?: string;
+
+  @IsOptional()
+  size?: string;
   }
 
 
