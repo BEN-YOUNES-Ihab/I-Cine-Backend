@@ -111,19 +111,29 @@ export class SessionsService {
         }else{
             date= dto.date[0]
         }
-        const session = await this.prismaService.session.update({
-            where:{
-                id:id
-            },
-            data: {
-                date:new Date(date),
-                places:dto.places,
-                remaningPlaces: dto.remaningPlaces,
-                movieId:dto.movieId,
-                updatedAt: new Date()
-            },
-        })
-        return session
+        try {
+            const session = await this.prismaService.session.update({
+                where:{
+                    id:id
+                },
+                data: {
+                    date:new Date(date),
+                    places:dto.places,
+                    remaningPlaces: dto.remaningPlaces,
+                    movieId:dto.movieId,
+                    updatedAt: new Date()
+                },
+            })
+            return session
+        }catch(e){
+            if(e instanceof PrismaClientKnownRequestError){
+                if(e.code ==='P2025'){
+                    throw new NotFoundException('Session not found.');
+                }
+                console.log(e);
+            }            
+        }
+
     }
 
     async deleteSession(id : number){
