@@ -1,28 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Request, Response } from 'express';
 import Stripe from 'stripe';
 import { queryCheckoutDto } from './dtos/payment.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { EmailService } from 'src/email/email.service';
 
 export const HAS_STOCK = true;
 
 @Injectable()
 export class PayementService {
-
   private stripe: Stripe = new Stripe(
-    "sk_test_51O2URIG1GoQo03KTsGyHuaaVoe2lPwATH3f9hU8RyhlVp2NYVZhKc93VEHW4R8zz10pNOmNXXlANEcZ8w6EycgI200mvroSvYK",
-    { apiVersion: "2023-10-16" },
+    'sk_test_51O2URIG1GoQo03KTsGyHuaaVoe2lPwATH3f9hU8RyhlVp2NYVZhKc93VEHW4R8zz10pNOmNXXlANEcZ8w6EycgI200mvroSvYK',
+    { apiVersion: '2023-10-16' },
   );
 
   constructor(
-    private prismaService: PrismaService, 
-    private emailService: EmailService) {}
+    private prismaService: PrismaService,
+    private emailService: EmailService,
+  ) {}
 
-
-
-  async createCheckout(queryCheckoutDto : queryCheckoutDto) {
+  async createCheckout(queryCheckoutDto: queryCheckoutDto) {
     const { places, sessionIdFront, userId } = queryCheckoutDto;
     const product = await this.stripe.products.create({
       name: 'Ticket',
@@ -51,7 +48,6 @@ export class PayementService {
     };
   }
 
-
   async successPaymentHandler(req: Request, res: Response) {
     //get req query values
     const sessionIdFront = +req.query.sessionIdFront;
@@ -66,46 +62,55 @@ export class PayementService {
     const currentSession = await this.prismaService.session.findUnique({
       where: {
         id: sessionIdFront,
-      },include:{movie:true}
+      },
+      include: { movie: true },
     });
     //get new remaning places
-    const newremaningPlaces = currentSession.places - places
+    const newremaningPlaces = currentSession.places - places;
     // if in stock
     if (newremaningPlaces >= 0) {
       const paymentIntent = await this.stripe.paymentIntents.capture(
         session.payment_intent as string,
       );
       if (paymentIntent.status == 'succeeded') {
-
-
-         // create an order
-         const order = await this.prismaService.order.create({
-          data:{ 
-              places: places,
-              amount: 10,
-              sessionId: sessionIdFront,
-              userId: userId,
-          }
-          });
-          // modifier remaningPlaces
-          await this.prismaService.session.update({
-            where: {
-              id: sessionIdFront,
-            },
-            data: {
-              remaningPlaces: newremaningPlaces,
-            },
-          });
-          // send email
-          const reservationDetails = {
-              filmName: currentSession.movie.title,
-              date: currentSession.date,
-              nombreBillets: places,
-              numeroReservation: order.id,
-              nomClient:session.customer_details.name
-            };
-            let emailDate = new Date(reservationDetails.date).toLocaleDateString('fr-FR', { weekday:"long", year:"numeric", month:"short", day:"numeric", hour:"numeric", minute:"numeric"}) 
-            const emailContent = `
+        // create an order
+        const order = await this.prismaService.order.create({
+          data: {
+            places: places,
+            amount: 10,
+            sessionId: sessionIdFront,
+            userId: userId,
+          },
+        });
+        // modifier remaningPlaces
+        await this.prismaService.session.update({
+          where: {
+            id: sessionIdFront,
+          },
+          data: {
+            remaningPlaces: newremaningPlaces,
+          },
+        });
+        // send email
+        const reservationDetails = {
+          filmName: currentSession.movie.title,
+          date: currentSession.date,
+          nombreBillets: places,
+          numeroReservation: order.id,
+          nomClient: session.customer_details.name,
+        };
+        let emailDate = new Date(reservationDetails.date).toLocaleDateString(
+          'fr-FR',
+          {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+          },
+        );
+        const emailContent = `
               Cher(e) ${reservationDetails.nomClient},<br>
               <br>
               Nous vous confirmons la réservation suivante chez I-Ciné :<br>
@@ -123,9 +128,14 @@ export class PayementService {
               Merci de choisir I-Ciné pour votre sortie cinéma.
             `;
         //redirect
-        await this.emailService.sendEmail(emailContent,session.customer_details.email);
+        await this.emailService.sendEmail(
+          emailContent,
+          session.customer_details.email,
+        );
 
-        res.redirect(`http://localhost:4200/pages/${sessionIdFront}/order?status=success&orderId=${order.id}`);
+        res.redirect(
+          `http://localhost:4200/pages/${sessionIdFront}/order?status=success&orderId=${order.id}`,
+        );
         return;
       }
     } else {
@@ -133,11 +143,15 @@ export class PayementService {
         session.payment_intent as string,
       );
       if (paymentIntent.status == 'canceled') {
-        res.redirect(`http://localhost:4200/pages/${sessionIdFront}/order?status=fail-stock`);
+        res.redirect(
+          `http://localhost:4200/pages/${sessionIdFront}/order?status=fail-stock`,
+        );
         return;
       }
     }
-    res.redirect(`http://localhost:4200/pages/${sessionIdFront}/order?status=fail`);
+    res.redirect(
+      `http://localhost:4200/pages/${sessionIdFront}/order?status=fail`,
+    );
     return;
   }
 }

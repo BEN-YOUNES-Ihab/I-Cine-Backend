@@ -1,68 +1,67 @@
-import { IsNotEmpty, MaxLength, MinLength, IsEmail, IsNumber, IsString, IsOptional } from "class-validator";
+import {
+  IsNotEmpty,
+  MaxLength,
+  MinLength,
+  IsEmail,
+  IsString,
+  IsOptional,
+} from 'class-validator';
 
 export class UserDto {
-
   @IsEmail()
   @IsNotEmpty()
-  email
-  
+  email;
+
   @IsNotEmpty()
   @MinLength(8)
   @MaxLength(30)
-  password
+  password;
 
   @IsNotEmpty()
-  firstname
+  firstname;
 
   @IsNotEmpty()
-  lastname
-
+  lastname;
 }
 
 export class UsertoEdit {
+  @IsEmail()
+  @IsNotEmpty()
+  email;
 
-    @IsEmail()
-    @IsNotEmpty()
-    email
-    
-    @IsNotEmpty()
-    firstname
-  
-    @IsNotEmpty()
-    lastname
-  
-  }
-  
-  export class UsertoEditRole {
-    
-    @IsNotEmpty()
-    @IsString()
-    role
-  }
+  @IsNotEmpty()
+  firstname;
+
+  @IsNotEmpty()
+  lastname;
+}
+
+export class UsertoEditRole {
+  @IsNotEmpty()
+  @IsString()
+  role;
+}
 export class UsertoEditPssword {
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8)
+  @MaxLength(30)
+  old_password;
 
-    @IsString()
-    @IsNotEmpty()
-    @MinLength(8)
-    @MaxLength(30)
-    old_password
+  @MinLength(8)
+  @MaxLength(30)
+  @IsString()
+  @IsNotEmpty()
+  password;
 
-    @MinLength(8)
-    @MaxLength(30)
-    @IsString()
-    @IsNotEmpty()
-    password
-
-    @MinLength(8)
-    @MaxLength(30)
-    @IsString()
-    @IsNotEmpty()
-    confirm_password
-
+  @MinLength(8)
+  @MaxLength(30)
+  @IsString()
+  @IsNotEmpty()
+  confirm_password;
 }
 
 export class UserFilterDto {
-
   @IsOptional()
   @IsString()
   keyword?: string;
