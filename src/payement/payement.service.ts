@@ -69,7 +69,7 @@ export class PayementService {
       },include:{movie:true}
     });
     //get new remaning places
-    const newremaningPlaces = currentSession.places - places
+    const newremaningPlaces = currentSession.remaningPlaces - places
     // if in stock
     if (newremaningPlaces >= 0) {
       const paymentIntent = await this.stripe.paymentIntents.capture(
@@ -82,7 +82,7 @@ export class PayementService {
          const order = await this.prismaService.order.create({
           data:{ 
               places: places,
-              amount: 10,
+              amount: ( 10*places ),
               sessionId: sessionIdFront,
               userId: userId,
           }

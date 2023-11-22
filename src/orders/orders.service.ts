@@ -84,7 +84,7 @@ export class OrdersService {
             where.session = {
                 date: {
                     gte: startDate,
-                    lt: endDate,
+                    lt: today,
                 },
             };
         } else {

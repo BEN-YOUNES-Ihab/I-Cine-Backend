@@ -30,7 +30,7 @@ model Movie{
 
   title  String 
   description String?
-  durationTime Int @default(120)
+  durationTime Int
   releaseDate DateTime
   onDisplay Boolean
   category String

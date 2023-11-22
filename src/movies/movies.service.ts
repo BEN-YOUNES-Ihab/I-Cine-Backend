@@ -4,7 +4,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { FilterDto, movieCategoryFilterDto, movieDto } from './dtos/movies.dto';
 import { updateMovieFormDto } from './dtos/update_movie.dto';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import multer from 'multer';
 
 @Injectable()
 export class MoviesService {
@@ -26,7 +25,8 @@ export class MoviesService {
                 description:dto.description,
                 releaseDate:new Date(date),
                 onDisplay:dto.onDisplay,
-                category:dto.category
+                category:dto.category,
+                durationTime:dto.durationTime
             }
         });
         return movie
@@ -199,6 +199,7 @@ export class MoviesService {
                 data: { 
                     title:dto.title,
                     description:dto.description,
+                    durationTime:dto.durationTime,
                     releaseDate:new Date(date),
                     onDisplay:dto.onDisplay,
                     category:dto.category,

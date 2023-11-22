@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty, ValidateIf, IsBoolean, IsOptional } from "class-validator";
+import { IsString, IsNotEmpty, ValidateIf, IsBoolean, IsOptional, IsInt } from "class-validator";
 
 export class movieDto {
     @IsString()
@@ -18,6 +18,10 @@ export class movieDto {
     @IsString()
     @IsNotEmpty()
     category
+
+    @IsInt()
+    @IsNotEmpty()
+    durationTime
 
 }
 export class FilterDto {
