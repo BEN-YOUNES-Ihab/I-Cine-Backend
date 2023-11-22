@@ -66,18 +66,13 @@ export class PayementService {
       include: { movie: true },
     });
     //get new remaning places
-<<<<<<< HEAD
     const newremaningPlaces = currentSession.remaningPlaces - places
-=======
-    const newremaningPlaces = currentSession.places - places;
->>>>>>> b0acc59f12e99476ecd31f4842ca1ec54ba9a468
     // if in stock
     if (newremaningPlaces >= 0) {
       const paymentIntent = await this.stripe.paymentIntents.capture(
         session.payment_intent as string,
       );
       if (paymentIntent.status == 'succeeded') {
-<<<<<<< HEAD
 
 
          // create an order
@@ -108,46 +103,6 @@ export class PayementService {
             };
             let emailDate = new Date(reservationDetails.date).toLocaleDateString('fr-FR', { weekday:"long", year:"numeric", month:"short", day:"numeric", hour:"numeric", minute:"numeric"}) 
             const emailContent = `
-=======
-        // create an order
-        const order = await this.prismaService.order.create({
-          data: {
-            places: places,
-            amount: 10,
-            sessionId: sessionIdFront,
-            userId: userId,
-          },
-        });
-        // modifier remaningPlaces
-        await this.prismaService.session.update({
-          where: {
-            id: sessionIdFront,
-          },
-          data: {
-            remaningPlaces: newremaningPlaces,
-          },
-        });
-        // send email
-        const reservationDetails = {
-          filmName: currentSession.movie.title,
-          date: currentSession.date,
-          nombreBillets: places,
-          numeroReservation: order.id,
-          nomClient: session.customer_details.name,
-        };
-        let emailDate = new Date(reservationDetails.date).toLocaleDateString(
-          'fr-FR',
-          {
-            weekday: 'long',
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-          },
-        );
-        const emailContent = `
->>>>>>> b0acc59f12e99476ecd31f4842ca1ec54ba9a468
               Cher(e) ${reservationDetails.nomClient},<br>
               <br>
               Nous vous confirmons la réservation suivante chez I-Ciné :<br>

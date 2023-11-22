@@ -58,31 +58,7 @@ export class OrdersService {
       },
     });
 
-<<<<<<< HEAD
-        const startDate = new Date(+year, 0, 1);
-        const endDate = new Date(+year + 1, 0, 1);
-        const today = new Date();
-    
-        if (archived === "true") {
-            where.userId = +userId;
-            where.session = {
-                date: {
-                    gte: startDate,
-                    lt: today,
-                },
-            };
-        } else {
-            where.userId = +userId;
-            where.session = {
-                date: {
-                    gte: today,
-                    lt: endDate,
-                },
-            };
-        }
-=======
     const totalElements = await this.prismaService.order.count({ where });
->>>>>>> b0acc59f12e99476ecd31f4842ca1ec54ba9a468
 
     const totalPages = Math.ceil(totalElements / parseInt(size));
 
@@ -106,7 +82,7 @@ export class OrdersService {
       where.session = {
         date: {
           gte: startDate,
-          lt: endDate,
+          lt: today,
         },
       };
     } else {
