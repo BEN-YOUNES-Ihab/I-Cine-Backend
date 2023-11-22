@@ -1,9 +1,8 @@
 import { IsString, IsNotEmpty, IsInt, IsOptional } from 'class-validator';
 
 export class sessionDto {
-    
   @IsNotEmpty()
-  date
+  date;
 
   @IsNotEmpty()
   places;
@@ -37,18 +36,14 @@ export class FilterDto {
 
   @IsOptional()
   size?: string;
-  }
+}
 
+export class FilterUserDto {
+  @IsNotEmpty()
+  @IsString()
+  movieId: string;
 
-  export class FilterUserDto {
-    @IsNotEmpty()
-    @IsString()
-    movieId: string;
-  
-
-  
-    @IsNotEmpty()
-    @IsString()
-    date: string;
-
-    }
+  @IsNotEmpty()
+  @IsString()
+  date: string;
+}

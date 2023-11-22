@@ -10,10 +10,10 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
       transport: {
         host: process.env.EMAIL_HOST,
         port: process.env.EMAIL_PORT,
-        secure: false, 
+        secure: false,
         auth: {
-          user: "ben.younes.ihab3@gmail.com",
-          pass: "xblp cjvl gecu rtmk"
+          user: 'ben.younes.ihab3@gmail.com',
+          pass: 'xblp cjvl gecu rtmk',
         },
       },
       defaults: {
@@ -29,6 +29,6 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     }),
   ],
   providers: [EmailService],
-  exports: [EmailService]
+  exports: [EmailService],
 })
 export class EmailModule {}

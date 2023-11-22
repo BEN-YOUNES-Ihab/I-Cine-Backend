@@ -17,8 +17,8 @@ export class CloudinaryService {
       streamifier.createReadStream(file.buffer).pipe(uploadStream);
     });
   }
-  async deleteFile(publicId:string){
-    const response = await cloudinary.uploader.destroy(publicId)
+  async deleteFile(publicId: string) {
+    const response = await cloudinary.uploader.destroy(publicId);
     return response;
   }
 }

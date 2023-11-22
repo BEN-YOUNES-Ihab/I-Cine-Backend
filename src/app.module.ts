@@ -10,12 +10,12 @@ import { EmailModule } from './email/email.module';
 import { PayementModule } from './payement/payement.module';
 @Module({
   imports: [
-    PrismaModule, 
-    AuthModule, 
-    UsersModule, 
-    MoviesModule, 
-    CloudinaryModule, 
-    SessionsModule, 
+    PrismaModule,
+    AuthModule,
+    UsersModule,
+    MoviesModule,
+    CloudinaryModule,
+    SessionsModule,
     OrdersModule,
     EmailModule,
     PayementModule,
